@@ -1,0 +1,74 @@
+networks:
+  delivery_network:
+    driver: bridge
+
+volumes:
+  delivery_db_data:
+  delivery_rabbit_data:
+
+services:
+  postgresdb:
+    image: postgres:latest
+    container_name: delivery_postgres
+    restart: on-failure
+    environment:
+      POSTGRES_USER: ${DATASOURCE_USERNAME}
+      POSTGRES_PASSWORD: ${DATASOURCE_PASSWORD}
+      POSTGRES_DB: ${DATASOURCE_DATABASE}
+    ports:
+      - "5433:5433"
+    healthcheck:
+      test: [
+        "CMD-SHELL",
+        "pg_isready -h localhost -U ${DATASOURCE_USERNAME} -d ${DATASOURCE_DATABASE}",
+      ]
+      interval: 10s
+      retries: 5
+      start_period: 30s
+      timeout: 10s
+    networks:
+      - delivery_network
+    volumes:
+      - delivery_db_data:/var/lib/postgresql/data
+
+  app:
+    container_name: delivery_client
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: on-failure
+    ports:
+      - "${SERVER_PORT}:${SERVER_PORT}"
+    environment:
+#      JAVA_OPTS: "-Xms512m -Xmx1024m"
+      DATASOURCE_URL: ${DATASOURCE_URL}
+      DATASOURCE_USERNAME: ${DATASOURCE_USERNAME}
+      DATASOURCE_PASSWORD: ${DATASOURCE_PASSWORD}
+      SERVER_PORT: ${SERVER_PORT}
+      RABBITMQ_HOST: ${RABBITMQ_HOST}
+      RABBITMQ_PORT: ${RABBITMQ_PORT}
+      RABBITMQ_USERNAME: ${RABBITMQ_USERNAME}
+      RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
+      RABBITMQ_VIRTUAL_HOST: ${RABBITMQ_VIRTUAL_HOST}
+    depends_on:
+      postgresdb:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_started
+    networks:
+      - delivery_network
+
+  rabbitmq:
+    image: rabbitmq:4.0-management
+    container_name: delivery_rabbitmq
+    restart: on-failure
+    ports:
+      - 5673:5673
+      - 15673:15673
+    volumes:
+      - delivery_rabbit_data:/var/lib/rabbitmq/
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    networks:
+      - delivery_network
