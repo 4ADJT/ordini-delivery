@@ -1,5 +1,6 @@
 package br.com.fiap.delivery.resources;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,37 @@ public class DeliveryResource {
     this.deliveryService = deliveryService;
   }
 
+  @GetMapping
+  @Operation(summary = "List deliveries", description = "List deliveries.")
+  public ResponseEntity<List<Delivery>> getAllDeliveries() {
+    return ResponseEntity.ok(deliveryService.findAll());
+  }
+
+  @GetMapping("/{id}")
+  @Operation(summary = "Find delivery by id", description = "Find delivery by id.")
+  public ResponseEntity<Delivery> getDeliveryById(@PathVariable UUID id) {
+    return ResponseEntity.ok(deliveryService.findById(id));
+  }
+
+  @PostMapping
+  @Operation(summary = "Create delivery", description = "Create delivery.")
+  public ResponseEntity<Delivery> createDelivery(@RequestBody Delivery delivery) {
+    return ResponseEntity.ok(deliveryService.save(delivery));
+  }
+
+  @PutMapping("/{id}")
+  @Operation(summary = "Update delivery", description = "Update delivery.")
+  public ResponseEntity<Delivery> updateDelivery(@PathVariable UUID id, @RequestBody Delivery delivery) {
+    return ResponseEntity.ok(deliveryService.update(id, delivery));
+  }
+
+  @DeleteMapping("/{id}")
+  @Operation(summary = "Delete delivery", description = "Delete delivery.")
+  public ResponseEntity<Void> deleteDelivery(@PathVariable UUID id) {
+    deliveryService.delete(id);
+    return ResponseEntity.noContent().build();
+  }
+
   @PutMapping("/{id}/tracking-stage")
   @Operation(summary = "Update tracking stage", description = "Update tracking stage.")
   public ResponseEntity<Delivery> updateTrackingStage(
@@ -41,14 +73,10 @@ public class DeliveryResource {
     return ResponseEntity.ok(trackingStage);
   }
 
-  @GetMapping("/estimate-time")
+  @GetMapping("/{id}/estimate-time")
   @Operation(summary = "Displays estimated delivery time (in days)", description = "Displays estimated delivery time (in days).")
-  public ResponseEntity<Double> estimateDeliveryTime(
-      @RequestParam String retailerLat,
-      @RequestParam String retailerLon,
-      @RequestParam String customerLat,
-      @RequestParam String customerLon) {
-    double estimate = deliveryService.estimateDeliveryTime(retailerLat, retailerLon, customerLat, customerLon);
-    return ResponseEntity.ok(estimate);
+  public ResponseEntity<Integer> estimateDeliveryTime(
+      @PathVariable UUID id) {
+    return ResponseEntity.ok(deliveryService.estimateDeliveryTimeInDays(id));
   }
 }
