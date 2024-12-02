@@ -15,16 +15,19 @@ services:
       POSTGRES_PASSWORD: ${DATASOURCE_PASSWORD}
       POSTGRES_DB: ${DATASOURCE_DATABASE}
     ports:
-      - "5432:5432"
+      - "5433:5433"
     healthcheck:
       test: [
         "CMD-SHELL",
-        "pg_isready -h localhost -U ${DATASOURCE_USERNAME} -d ${DATASOURCE_DATABASE}",
+        "pg_isready -h localhost -p 5433 -U ${DATASOURCE_USERNAME} -d ${DATASOURCE_DATABASE}",
       ]
       interval: 10s
       retries: 5
       start_period: 30s
       timeout: 10s
+    command: -p 5433
+    expose:
+      - "5433"
     networks:
       - delivery_network
     volumes:
