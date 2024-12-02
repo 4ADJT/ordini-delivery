@@ -3,19 +3,19 @@ networks:
     driver: bridge
 
 volumes:
-  delivery_db_data:
+  ordini_delivery_db_data:
 
 services:
   postgresdb:
     image: postgres:latest
-    container_name: delivery_postgres
+    container_name: ordini_delivery_postgres
     restart: on-failure
     environment:
       POSTGRES_USER: ${DATASOURCE_USERNAME}
       POSTGRES_PASSWORD: ${DATASOURCE_PASSWORD}
       POSTGRES_DB: ${DATASOURCE_DATABASE}
     ports:
-      - "5433:5432"
+      - "5432:5432"
     healthcheck:
       test: [
         "CMD-SHELL",
@@ -28,10 +28,10 @@ services:
     networks:
       - delivery_network
     volumes:
-      - delivery_db_data:/var/lib/postgresql/data
+      - ordini_delivery_db_data:/var/lib/postgresql/data
 
   app:
-    container_name: delivery_app
+    container_name: ordini_delivery
     build:
       context: .
       dockerfile: Dockerfile
