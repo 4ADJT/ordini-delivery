@@ -35,8 +35,6 @@ dependencies {
     implementation("org.flywaydb:flyway-core")
     implementation("org.flywaydb:flyway-database-postgresql")
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:$springdocVersion")
-    implementation("org.springframework.cloud:spring-cloud-starter-stream-rabbit")
-    implementation("org.springframework.cloud:spring-cloud-stream-binder-rabbit")
     implementation("org.mapstruct:mapstruct:$mapstructVersion")
     compileOnly("org.projectlombok:lombok")
     runtimeOnly("org.postgresql:postgresql")

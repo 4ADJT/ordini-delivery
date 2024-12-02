@@ -4,7 +4,6 @@ networks:
 
 volumes:
   delivery_db_data:
-  delivery_rabbit_data:
 
 services:
   postgresdb:
@@ -45,30 +44,8 @@ services:
       DATASOURCE_USERNAME: ${DATASOURCE_USERNAME}
       DATASOURCE_PASSWORD: ${DATASOURCE_PASSWORD}
       SERVER_PORT: ${SERVER_PORT}
-      RABBITMQ_HOST: ${RABBITMQ_HOST}
-      RABBITMQ_PORT: ${RABBITMQ_PORT}
-      RABBITMQ_USERNAME: ${RABBITMQ_USERNAME}
-      RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
-      RABBITMQ_VIRTUAL_HOST: ${RABBITMQ_VIRTUAL_HOST}
     depends_on:
       postgresdb:
         condition: service_healthy
-      rabbitmq:
-        condition: service_started
-    networks:
-      - delivery_network
-
-  rabbitmq:
-    image: rabbitmq:4.0-management
-    container_name: delivery_rabbitmq
-    restart: on-failure
-    ports:
-      - 5673:5673
-      - 15673:15673
-    volumes:
-      - delivery_rabbit_data:/var/lib/rabbitmq/
-    environment:
-      - RABBITMQ_DEFAULT_USER=guest
-      - RABBITMQ_DEFAULT_PASS=guest
     networks:
       - delivery_network
