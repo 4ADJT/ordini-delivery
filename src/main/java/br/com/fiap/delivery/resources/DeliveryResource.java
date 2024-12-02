@@ -9,7 +9,10 @@ import org.springframework.web.bind.annotation.*;
 import br.com.fiap.delivery.models.Delivery;
 import br.com.fiap.delivery.models.TrackingStage;
 import br.com.fiap.delivery.services.DeliveryService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
+@Tag(name = "Deliveries")
 @RestController
 @RequestMapping("/deliveries")
 public class DeliveryResource {
@@ -22,6 +25,7 @@ public class DeliveryResource {
   }
 
   @PutMapping("/{id}/tracking-stage")
+  @Operation(summary = "Update tracking stage", description = "Update tracking stage.")
   public ResponseEntity<Delivery> updateTrackingStage(
       @PathVariable UUID id,
       @RequestBody TrackingStage stage) {
@@ -30,6 +34,7 @@ public class DeliveryResource {
   }
 
   @GetMapping("/{id}/tracking-stage")
+  @Operation(summary = "Show tracking stage", description = "Show tracking stage.")
   public ResponseEntity<TrackingStage> showTrackingStage(
       @PathVariable UUID id) {
     TrackingStage trackingStage = deliveryService.showTrackingStage(id);
@@ -37,6 +42,7 @@ public class DeliveryResource {
   }
 
   @GetMapping("/estimate-time")
+  @Operation(summary = "Displays estimated delivery time (in days)", description = "Displays estimated delivery time (in days).")
   public ResponseEntity<Double> estimateDeliveryTime(
       @RequestParam String retailerLat,
       @RequestParam String retailerLon,
