@@ -1,5 +1,5 @@
 networks:
-  delivery_network:
+  ordini_network:
     driver: bridge
 
 volumes:
@@ -29,7 +29,7 @@ services:
     expose:
       - "5433"
     networks:
-      - delivery_network
+      - ordini_network
     volumes:
       - ordini_delivery_db_data:/var/lib/postgresql/data
 
@@ -51,6 +51,4 @@ services:
       postgresdb:
         condition: service_healthy
     networks:
-      - delivery_network
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
+      - ordini_network
